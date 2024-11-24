@@ -1,88 +1,112 @@
-// Enum untuk Status Mahasiswa
 enum StatusMahasiswa { aktif, cuti, alumni }
 
-// Abstract class untuk kehadiran
+
 abstract class Kehadiran {
   void absensi();
 }
 
-// Mixin untuk menambah fitur aktivitas organisasi
 mixin AktivitasOrganisasi {
+  List<String> daftarOrganisasi = [];
+
   void ikutOrganisasi(String organisasi) {
+    daftarOrganisasi.add(organisasi);
     print('Ikut dalam organisasi $organisasi');
+  }
+
+  void tampilkanOrganisasi() {
+    if (daftarOrganisasi.isEmpty) {
+      print('Belum bergabung dengan organisasi manapun.');
+    } else {
+      print('Aktif dalam organisasi: ${daftarOrganisasi.join(', ')}');
+    }
   }
 }
 
-// Kelas dasar Mahasiswa
 class Mahasiswa {
   String nama;
   String _npm;
   String jurusan;
   StatusMahasiswa status;
 
-  // Constructor dengan positional argument untuk nama, npm, dan jurusan
-  Mahasiswa(this.nama, this._npm, this.jurusan, this.status);
+  Mahasiswa(
+      {required this.nama,
+      required String npm,
+      required this.jurusan,
+      required this.status})
+      : _npm = npm;
 
-  // Getter dan Setter untuk NPM dengan validasi panjang karakter
   String get npm => _npm;
   set npm(String value) {
-    if (value.length == 8) {
+    if (value.length == 10) {
       _npm = value;
     } else {
-      print('NPM harus 8 karakter.');
+      print('NPM harus 10 karakter.');
     }
   }
 
-  // Metode belajar
   void belajar() {
-    print('$nama sedang belajar.');
+    print('$nama sedang belajar di jurusan $jurusan.');
   }
 
-  // Metode menyelesaikan tugas
-  void menyelesaikanTugas() {
-    print('$nama telah menyelesaikan tugas.');
+  void menyelesaikanTugas(String tugas) {
+    print('$nama telah menyelesaikan tugas $tugas.');
   }
 
-  // Metode cek status mahasiswa
   void cekStatus() {
-    print('$nama memiliki status $status');
+    print('$nama memiliki status mahasiswa: ${status.name.toUpperCase()}');
+  }
+
+  @override
+  String toString() {
+    return 'Mahasiswa: $nama, NPM: $_npm, Jurusan: $jurusan, Status: ${status.name}';
   }
 }
 
-// Kelas turunan MahasiswaAktif dengan inheritance dari Mahasiswa dan implementasi Kehadiran serta mixin AktivitasOrganisasi
+
 class MahasiswaAktif extends Mahasiswa
     with AktivitasOrganisasi
     implements Kehadiran {
   int semester;
 
-  // Constructor dengan inheritance dari superclass Mahasiswa
-  MahasiswaAktif(String nama, String npm, String jurusan,
-      StatusMahasiswa status, this.semester)
-      : super(nama, npm, jurusan, status);
+  MahasiswaAktif(
+      {required String nama,
+      required String npm,
+      required String jurusan,
+      required StatusMahasiswa status,
+      required this.semester})
+      : super(nama: nama, npm: npm, jurusan: jurusan, status: status);
 
-  // Implementasi metode absensi dari Kehadiran
+
   @override
   void absensi() {
-    print('$nama telah hadir di kelas.');
+    print('$nama telah hadir di kelas untuk semester $semester.');
   }
 
-  // Metode khusus untuk mengambil KRS
   void ambilKRS() {
-    print('$nama sedang mengambil KRS untuk semester $semester');
+    print('$nama sedang mengambil KRS untuk semester $semester.');
   }
 }
 
-// Fungsi utama untuk menjalankan program
-void main() {
-  // Membuat objek mahasiswa
-  var mahasiswa = MahasiswaAktif(
-      'Budi', '12345678', 'Informatika', StatusMahasiswa.aktif, 5);
 
-  // Memanggil berbagai metode untuk menampilkan informasi
+void main() {
+  
+  var mahasiswa = MahasiswaAktif(
+      nama: 'Gibran',
+      npm: '0352211026',
+      jurusan: 'Informatika',
+      status: StatusMahasiswa.aktif,
+      semester: 5);
+
+  
+  print(mahasiswa);
+
+  
   mahasiswa.belajar();
-  mahasiswa.menyelesaikanTugas();
+  mahasiswa.menyelesaikanTugas('PraktikumPemrograman Dart');
   mahasiswa.absensi();
   mahasiswa.ambilKRS();
-  mahasiswa.ikutOrganisasi('BEM');
+  mahasiswa.ikutOrganisasi('Sanggar Baskara');
+  mahasiswa.ikutOrganisasi('HMTI');
+  mahasiswa.tampilkanOrganisasi();
   mahasiswa.cekStatus();
 }

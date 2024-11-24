@@ -5,41 +5,45 @@ class BahanMakanan {
 
   BahanMakanan(this.nama, this.jumlahStok, this.tanggalKedaluwarsa);
 
-  // Mengecek apakah bahan sudah kedaluwarsa
-  bool cekKedaluwarsa() {
-    return DateTime.now().isAfter(tanggalKedaluwarsa);
-  }
+  bool sudahKedaluwarsa() => DateTime.now().isAfter(tanggalKedaluwarsa);
 
-  // Menambah stok bahan
-  void tambahStok(double jumlah) {
-    jumlahStok += jumlah;
-    print(
-        "Stok $nama berhasil ditambahkan. Total stok sekarang: $jumlahStok kg.");
-  }
-
-  // Mengurangi stok bahan
-  void kurangiStok(double jumlah) {
-    if (jumlahStok >= jumlah) {
-      jumlahStok -= jumlah;
-      print("Stok $nama berhasil dikurangi. Sisa stok: $jumlahStok kg.");
-    } else {
-      print("Stok tidak mencukupi untuk $nama.");
-    }
+  @override
+  String toString() {
+    return "$nama - $jumlahStok kg (Kedaluwarsa: ${tanggalKedaluwarsa.toLocal().toShortDateString()})";
   }
 }
 
 class InventoriRestoran {
-  List<BahanMakanan> daftarBahan = [];
+  List<BahanMakanan> bahanMakananList = [];
 
-  // Menambahkan bahan ke dalam inventori
-  void tambahBahan(BahanMakanan bahan) {
-    daftarBahan.add(bahan);
+
+  void tambahBahan(String nama, double stok, DateTime tanggalKedaluwarsa) {
+    bahanMakananList.add(BahanMakanan(nama, stok, tanggalKedaluwarsa));
+    print("Bahan $nama berhasil ditambahkan ke inventori.");
   }
 
-  // Mengecek semua bahan yang sudah kedaluwarsa
-  void cekSemuaKedaluwarsa() {
-    for (var bahan in daftarBahan) {
-      if (bahan.cekKedaluwarsa()) {
+ 
+  void tampilkanSemuaBahan() {
+    print("\n=== Daftar Bahan Makanan ===");
+    if (bahanMakananList.isEmpty) {
+      print("Inventori kosong.");
+    } else {
+      for (var bahan in bahanMakananList) {
+        print(bahan);
+      }
+    }
+  }
+
+
+  void cekKedaluwarsa() {
+    print("\n=== Status Kedaluwarsa ===");
+    if (bahanMakananList.isEmpty) {
+      print("Tidak ada bahan untuk diperiksa.");
+      return;
+    }
+
+    for (var bahan in bahanMakananList) {
+      if (bahan.sudahKedaluwarsa()) {
         print("${bahan.nama} sudah kedaluwarsa.");
       } else {
         print("${bahan.nama} masih aman.");
@@ -48,18 +52,24 @@ class InventoriRestoran {
   }
 }
 
+extension DateTimeExtension on DateTime {
+  String toShortDateString() {
+    return "${this.day}/${this.month}/${this.year}";
+  }
+}
+
 void main() {
-  // Membuat objek inventori restoran
+
   var inventori = InventoriRestoran();
 
-  // Menambahkan beberapa bahan makanan dengan tanggal kedaluwarsa yang berbeda
-  inventori
-      .tambahBahan(BahanMakanan('Ikan Salmon', 10, DateTime(2024, 10, 20)));
-  inventori.tambahBahan(BahanMakanan('Tepung', 20, DateTime(2025, 5, 15)));
-  inventori.tambahBahan(BahanMakanan('Susu', 5, DateTime(2024, 8, 1)));
-  inventori.tambahBahan(BahanMakanan('Mentega', 8, DateTime(2024, 12, 1)));
+  
+  inventori.tambahBahan('Gurita ', 15, DateTime(2024, 12, 8));
+  inventori.tambahBahan('Beras', 30, DateTime(2025, 6, 20));
+  inventori.tambahBahan('Ayam potong', 50, DateTime(2024, 8, 7));
+  inventori.tambahBahan('Minyak', 90, DateTime(2024, 8, 4));
 
-  // Cek kedaluwarsa bahan makanan
-  print("\nStatus Kedaluwarsa Bahan Makanan:");
-  inventori.cekSemuaKedaluwarsa();
+
+  inventori.tampilkanSemuaBahan();
+
+  inventori.cekKedaluwarsa();
 }

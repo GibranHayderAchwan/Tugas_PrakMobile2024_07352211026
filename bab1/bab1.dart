@@ -1,100 +1,96 @@
-class User {
-  String name;
-  int age;
-  late List<Product> products;
-  Role? role;
+class Member {
+  String username;
+  int yearsOld;
+  late List<Goods> inventory;
+  MemberType? type;
 
-  User(this.name, this.age, this.role) {
-    products = [];
+  Member(this.username, this.yearsOld, this.type) {
+    inventory = [];
   }
 }
 
-class Product {
-  String productName;
-  double price;
-  bool inStock;
+class Goods {
+  String title;
+  double value;
+  bool isAvailable;
 
-  Product(this.productName, this.price, this.inStock);
+  Goods(this.title, this.value, this.isAvailable);
 }
 
-enum Role { Admin, Customer }
+enum MemberType { Manager, Buyer }
 
-class AdminUser extends User {
-  AdminUser(String name, int age) : super(name, age, Role.Admin);
+class Manager extends Member {
+  Manager(String username, int yearsOld) : super(username, yearsOld, MemberType.Manager);
 
-  void tambahProduk(Product product) {
-    if (product.inStock) {
-      products.add(product);
-      print("\n===== INFO LAPORAN TAMBAH PRODUK =====");
-      print('${product.productName} berhasil ditambahkan ke daftar produk.');
+  void addGoods(Goods goods) {
+    if (goods.isAvailable) {
+      inventory.add(goods);
+      print("\n===== GOODS ADDITION REPORT =====");
+      print('${goods.title} successfully added to inventory.');
     } else {
-      print(
-          '${product.productName} tidak tersedia dalam stok dan tidak dapat ditambahkan.');
+      print('${goods.title} is out of stock and cannot be added.');
     }
   }
 
-  void hapusProduk(Product product) {
-    products.remove(product);
-    print("\n===== INFO LAPORAN HAPUS PRODUK =====");
-    print('${product.productName} berhasil dihapus dari daftar produk.');
+  void deleteGoods(Goods goods) {
+    inventory.remove(goods);
+    print("\n===== GOODS REMOVAL REPORT =====");
+    print('${goods.title} successfully removed from inventory.');
   }
 }
 
-class CustomerUser extends User {
-  CustomerUser(String name, int age) : super(name, age, Role.Customer);
+class Buyer extends Member {
+  Buyer(String username, int yearsOld) : super(username, yearsOld, MemberType.Buyer);
 
-  void lihatProduk() {
-    print('\nDaftar Produk Tersedia:');
-    for (var product in products) {
-      print(
-          '${product.productName} - Rp${product.price} - ${product.inStock ? "Tersedia" : "Habis"}');
+  void browseGoods() {
+    print('\nAvailable Goods:');
+    for (var goods in inventory) {
+      print('${goods.title} - Rp${goods.value} - ${goods.isAvailable ? "In Stock" : "Out of Stock"}');
     }
   }
 }
 
-Future<void> fetchProductDetails() async {
-  print('Mengambil detail produk...');
+Future<void> retrieveGoodsData() async {
+  print('Retrieving goods data...');
   await Future.delayed(Duration(seconds: 2));
-  print('Detail produk berhasil diambil.');
+  print('Goods data successfully retrieved.');
 }
 
 void main() {
-  AdminUser admin = AdminUser('Alice', 30);
-  CustomerUser customer = CustomerUser('Bob', 25);
+  Manager manager = Manager('Gibran', 22);
+  Buyer buyer = Buyer('Bun', 20);
 
-  Product product1 = Product('Laptop', 15000000.0, true);
-  Product product2 = Product('Handphone1', 8000000.0, false);
-  Product product3 = Product('Handphone2', 8000000.0, true);
+  Goods goods1 = Goods('Tablet', 10000000.0, true);
+  Goods goods2 = Goods('Smartwatch', 5000000.0, false);
+  Goods goods3 = Goods('Desktop PC', 20000000.0, true);
 
   try {
-    admin.tambahProduk(product1);
-    admin.hapusProduk(product2);
-    admin.tambahProduk(product3);
-  } on Exception catch (e) {
-    print('Kesalahan: $e');
+    manager.addGoods(goods1);
+    manager.deleteGoods(goods2);
+    manager.addGoods(goods3);
+  } catch (e) {
+    print('Error: $e');
   }
 
-  customer.lihatProduk();
+  buyer.browseGoods();
 
-  // Pengambilan data produk secara asinkron
-  fetchProductDetails();
 
-  // Koleksi - Menggunakan Map dan Set
-  Map<String, Product> productMap = {
-    product1.productName: product1,
-    product2.productName: product2,
-    product3.productName: product3,
+  retrieveGoodsData();
+
+ 
+  Map<String, Goods> goodsDirectory = {
+    goods1.title: goods1,
+    goods2.title: goods2,
+    goods3.title: goods3,
   };
 
-  productMap.forEach((key, value) {
-    print(
-        '${key} - Harga: Rp${value.price} - Stok: ${value.inStock ? "Tersedia" : "Habis"}');
+  goodsDirectory.forEach((key, value) {
+    print('${key} - Price: Rp${value.value} - Stock: ${value.isAvailable ? "Available" : "Out of Stock"}');
   });
 
-  Set<Product> productSet = {product1, product2, product3};
-  print('\nDaftar Produk dari Set:');
-  productSet.forEach((product) {
-    print(
-        '${product.productName} - Harga: Rp${product.price} - Stok: ${product.inStock ? "Tersedia" : "Habis"}');
+  Set<Goods> goodsSet = {goods1, goods2, goods3};
+  print('\nGoods List from Set:');
+  goodsSet.forEach((goods) {
+    print('${goods.title} - Price: Rp${goods.value} - Stock: ${goods.isAvailable ? "Available" : "Out of Stock"}');
   });
 }
